@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MSA Mathematik – Countdown</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f1a;
+    --surface: #13172a;
+    --border: #1e2340;
+    --accent: #4f8ef7;
+    --accent2: #f74f8e;
+    --text: #e8ecff;
+    --muted: #5a6080;
+    --digit-bg: #0d1124;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0.4;
+    z-index: 0;
+  }
+
+  /* Glow blobs */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
+    opacity: 0.18;
+    animation: drift 12s ease-in-out infinite alternate;
+  }
+  .blob-1 { width: 500px; height: 500px; background: var(--accent); top: -150px; left: -100px; }
+  .blob-2 { width: 400px; height: 400px; background: var(--accent2); bottom: -100px; right: -80px; animation-delay: -6s; }
+
+  @keyframes drift {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(40px, 30px) scale(1.08); }
+  }
+
+  .card {
+    position: relative;
+    z-index: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 52px 56px 44px;
+    max-width: 720px;
+    width: 94vw;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
+    text-align: center;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(79,142,247,0.12);
+    border: 1px solid rgba(79,142,247,0.25);
+    border-radius: 100px;
+    padding: 5px 16px;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.4rem, 6vw, 3.8rem);
+    letter-spacing: 0.04em;
+    line-height: 1;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    margin-bottom: 44px;
+  }
+
+  .countdown {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 36px;
+  }
+
+  .unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .digit-wrap {
+    position: relative;
+    width: 112px;
+    height: 112px;
+    perspective: 400px;
+  }
+
+  @media (max-width: 520px) {
+    .digit-wrap { width: 72px; height: 72px; }
+    .digit { font-size: 2.8rem !important; }
+    .card { padding: 36px 24px 32px; }
+    .countdown { gap: 8px; }
+  }
+
+  .digit {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 4rem;
+    color: var(--text);
+    background: var(--digit-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.08s ease;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+
+  .digit::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    top: 50%;
+    height: 1px;
+    background: rgba(255,255,255,0.05);
+  }
+
+  .digit.flip {
+    animation: flipAnim 0.35s ease;
+  }
+
+  /* Seconds get a softer fade-only transition */
+  #d-seconds.flip {
+    animation: fadeNum 0.8s ease;
+  }
+
+  @keyframes flipAnim {
+    0%   { transform: rotateX(0deg); }
+    45%  { transform: rotateX(-90deg); }
+    55%  { transform: rotateX(-90deg); }
+    100% { transform: rotateX(0deg); }
+  }
+
+  @keyframes fadeNum {
+    0%   { opacity: 0.5; }
+    100% { opacity: 1;   }
+  }
+
+  .label {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .separator {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    color: var(--border);
+    align-self: flex-start;
+    margin-top: 22px;
+    line-height: 1;
+    user-select: none;
+    animation: blink 1.4s step-start infinite;
+  }
+
+  @keyframes blink { 0%, 100% { opacity: 1 } 50% { opacity: 0.15 } }
+
+  .progress-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    transition: width 1s linear;
+  }
+
+  .exam-date {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .exam-date strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .finished-msg {
+    display: none;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: var(--accent2);
+    letter-spacing: 0.06em;
+  }
+</style>
+</head>
+<body>
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<div class="card">
+  <div class="badge">Schleswig-Holstein · Schuljahr 2025/26</div>
+  <h1>MSA Mathematik</h1>
+  <p class="subtitle">Zentralprüfung · 05. Mai 2026</p>
+
+  <div id="countdown-wrap">
+    <div class="countdown">
+      <div class="unit">
+        <div class="digit-wrap"><div class="digit" id="d-days">--</div></div>
+        <span class="label">Tage</span>
+      </div>
+      <div class="separator">:</div>
+      <div class="unit">
+        <div class="digit-wrap"><div class="digit" id="d-hours">--</div></div>
+        <span class="label">Stunden</span>
+      </div>
+      <div class="separator">:</div>
+      <div class="unit">
+        <div class="digit-wrap"><div class="digit" id="d-minutes">--</div></div>
+        <span class="label">Minuten</span>
+      </div>
+      <div class="separator">:</div>
+      <div class="unit">
+        <div class="digit-wrap"><div class="digit" id="d-seconds">--</div></div>
+        <span class="label">Sekunden</span>
+      </div>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress" style="width:0%"></div>
+    </div>
+
+    <p class="exam-date">Prüfungsbeginn: <strong>Dienstag, 05. Mai 2026 · 08:00 Uhr</strong></p>
+  </div>
+
+  <div class="finished-msg" id="finished">🎉 Prüfung hat begonnen – viel Erfolg!</div>
+</div>
+
+<script>
+  const EXAM = new Date('2026-05-05T08:00:00');
+  // Start of school year approx. 02.09.2025
+  const START = new Date('2025-09-02T00:00:00');
+  const totalMs = EXAM - START;
+
+  const els = {
+    days:    document.getElementById('d-days'),
+    hours:   document.getElementById('d-hours'),
+    minutes: document.getElementById('d-minutes'),
+    seconds: document.getElementById('d-seconds'),
+    progress: document.getElementById('progress'),
+    wrap:    document.getElementById('countdown-wrap'),
+    finished: document.getElementById('finished'),
+  };
+
+  let prev = { days: null, hours: null, minutes: null, seconds: null };
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function flip(el) {
+    el.classList.remove('flip');
+    void el.offsetWidth;
+    el.classList.add('flip');
+  }
+
+  function tick() {
+    const now = new Date();
+    const diff = EXAM - now;
+
+    if (diff <= 0) {
+      els.wrap.style.display = 'none';
+      els.finished.style.display = 'block';
+      return;
+    }
+
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+
+    const vals = { days: pad(d), hours: pad(h), minutes: pad(m), seconds: pad(s) };
+
+    for (const key of ['days','hours','minutes','seconds']) {
+      if (vals[key] !== prev[key]) {
+        els[key].textContent = vals[key];
+        flip(els[key]);
+        prev[key] = vals[key];
+      }
+    }
+
+    const elapsed = Math.max(0, now - START);
+    const pct = Math.min(100, (elapsed / totalMs) * 100);
+    els.progress.style.width = pct + '%';
+  }
+
+  tick();
+  setInterval(tick, 1000);
+</script>
+</body>
+</html>
